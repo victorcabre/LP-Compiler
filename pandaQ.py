@@ -56,8 +56,8 @@ class EvalVisitor(pandaQVisitor):
     def visitColumnList(self, ctx):
         list = []
         for token in ctx.getChildren():
-            # if token.getText() != ',':
-            #     list.append(token.getText())
+            if token.getText() != ',':
+                list.append(token.getText())
             self.visit(token)
         return list
     
