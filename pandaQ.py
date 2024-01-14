@@ -14,7 +14,7 @@ from operator import add, sub, mul, truediv
 st.subheader("Víctor Cabré Guerrero")
 st.title("PandaQ")  
 
-query = st.text_input("Query:", value="select * from employees inner join departments on department_id=department_id")
+query = st.text_input("Query:", value="select first_name, department_name from employees inner join departments on department_id=department_id")
 
 
 def load_table(name):
@@ -43,9 +43,9 @@ class EvalVisitor(pandaQVisitor):
 
 
         # process argument "inner join"
-        # for arg in args:
-        #     if "inner join" in arg.getText():
-        #         self.visit(arg)
+        for arg in args:
+            if "inner join" in arg.getText():
+                self.visit(arg)
 
         # Display table with all columns or specific columns
         if (ids.getText() == "*"):
@@ -55,7 +55,8 @@ class EvalVisitor(pandaQVisitor):
         
         # process extra arguments (order and where)
         for arg in args:
-            self.visit(arg)
+            if "inner join" not in arg.getText():
+                self.visit(arg)
         
         st.write("Result:", self.df)
 
@@ -171,8 +172,7 @@ class EvalVisitor(pandaQVisitor):
         [_, table, _, col1, _, col2] = ctx.getChildren()
 
         other_df = load_table(table.getText())
-        self.df = pd.merge(self.df, other_df, left_on=col1.getText(), right_on=col2.getText(), how='inner')
-
+        self.data = pd.merge(self.data, other_df, left_on=col1.getText(), right_on=col2.getText(), how='inner')
 
 # Main script
 input_stream = InputStream(query)
