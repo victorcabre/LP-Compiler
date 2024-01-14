@@ -32,11 +32,8 @@ class EvalVisitor(pandaQVisitor):
 
     # SELECT fields FROM table (ORDER BY)? 
     def visitSelect(self, ctx):
-        if ctx.getChildCount() == 5:
-            [_, ids, _, table, order] = ctx.getChildren()
-        else:
-            [_, ids, _, table] = ctx.getChildren()
-            order = None
+        # args has optional arguments (order and where)
+        [_, ids, _, table, *args] = ctx.getChildren()
 
         # Load table 
         self.data = load_table(table.getText())
@@ -50,8 +47,9 @@ class EvalVisitor(pandaQVisitor):
         else:
             self.visit(ids)
         
-        if order is not None:
-            self.visit(order)
+        # process extra arguments (order and where)
+        for arg in args:
+            self.visit(arg)
         
         st.write("Result:", self.df)
 
