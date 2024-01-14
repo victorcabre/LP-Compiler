@@ -32,9 +32,13 @@ class EvalVisitor(pandaQVisitor):
 
     # SELECT fields FROM table
     def visitSelect(self, ctx):
-        [_, ids, _, table] = ctx.getChildren()
+        if ctx.getChildCount() == 5:
+            [_, ids, _, table, order] = ctx.getChildren()
+        else:
+            [_, ids, _, table] = ctx.getChildren()
+            order = None
 
-        # Load table
+        # Load table 
         self.data = load_table(table.getText())
         if self.data is None: return
         
@@ -42,11 +46,16 @@ class EvalVisitor(pandaQVisitor):
 
         # Display table with all columns or specific columns
         if (ids.getText() == "*"):
-            st.write("Result:", self.data)
+            self.df = self.data
         else:
             self.visit(ids)
-            st.write("Result:", self.df)
-    
+        
+        if order is not None:
+            self.visit(order)
+        
+        st.write("Result:", self.df)
+
+
     def visitIdentifier(self, ctx):
         [id] = ctx.getChildren()
         return id.getText()
@@ -93,6 +102,23 @@ class EvalVisitor(pandaQVisitor):
 
     def visitCalculatedName(self, ctx: pandaQParser.CalculatedNameContext):
         return self.data[ctx.getText()]
+    
+    def visitOrder(self, ctx: pandaQParser.OrderContext):
+        if ctx.getChildCount() == 3:
+            [_, column, order] = ctx.getChildren()
+            asc = order.getText() == 'asc'
+        else:
+            [_, column] = ctx.getChildren()
+            asc = True
+
+        if column.getText() not in self.df.columns:
+            st.error(f"Incorrect column \"{column.getText()}\" in ORDER BY statement")
+            return
+        
+        if asc:
+            self.df = self.df.sort_values(axis=0, by=column.getText(), ascending=True)
+        else:
+            self.df = self.df.sort_values(axis=0, by=column.getText(), ascending=False)
         
         
     

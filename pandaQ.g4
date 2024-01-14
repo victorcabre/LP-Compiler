@@ -4,7 +4,7 @@ root: statement*;
 
 statement: select;
 
-select: 'select' ('*'|columnList) 'from' ID order?;
+select: 'select' ('*'|columnList) 'from' ID (order)?;
 
 columnList: (columnName|calculatedColumn) (',' (columnName|calculatedColumn))*;
 
@@ -17,14 +17,13 @@ expr    : expr ('*'|'/') expr                             # opBin
         | expr ('+'|'-') expr                             # opBin
         | FLOAT                                           # float
         | INT                                             # int
-        | ID                                              # calculatedName       ;
+        | ID                                              # calculatedName
+        ;
 
 identificator: ID;
 
 
-order: 'order by' orderList;
-
-orderList: (ID ('asc'|'desc')) (',' (ID ('asc'|'desc')))*;
+order: 'order by' (ID ('asc'|'desc')?) (',' (ID ('asc'|'desc')?))*;
 
 
 INT: [0-9]+;
