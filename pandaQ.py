@@ -28,6 +28,9 @@ def load_table(name):
 # ANTLR visitor
 
 class EvalVisitor(pandaQVisitor):
+    def __init__(self):
+        super().__init__()
+        self.is_subquery = False
 
     # SELECT fields FROM table
     def visitSelect(self, ctx):
@@ -42,6 +45,8 @@ class EvalVisitor(pandaQVisitor):
             if self.data is None: return
         
         self.df = pd.DataFrame()
+
+        
 
         # process argument "inner join"
         for arg in args:
@@ -59,7 +64,10 @@ class EvalVisitor(pandaQVisitor):
             if "inner join" not in arg.getText():
                 self.visit(arg)
         
-        st.write("Result:", self.df)
+        if (not self.is_subquery):
+            st.write("Result:", self.df)
+
+        self.is_subquery = False
 
 
     def visitIdentifier(self, ctx):
@@ -195,6 +203,8 @@ class EvalVisitor(pandaQVisitor):
 
     def visitWhereIn(self, ctx:pandaQParser.WhereInContext):
         [_, id, _, _, select, _] = ctx.getChildren()
+
+        self.is_subquery = True
         
         # visit subquery statement and get result
         original_df = self.df.copy()
