@@ -140,7 +140,10 @@ class EvalVisitor(pandaQVisitor):
         return operators[operator.getText()](self.visit(expr1), self.visit(expr2))
 
     def visitNameBool(self, ctx: pandaQParser.NameBoolContext):
-        return self.df[ctx.getText()]
+        try:
+            return self.data[ctx.getText()]
+        except:
+            return ctx.getText()
 
     def visitNotBool(self, ctx: pandaQParser.NotBoolContext):
         [_, expr] = ctx.getChildren()
