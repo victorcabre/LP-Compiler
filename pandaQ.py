@@ -13,7 +13,7 @@ from operator import add, sub, mul, truediv
 st.subheader("Víctor Cabré Guerrero")
 st.title("PandaQ")  
 
-query = st.text_area("Query:", value="q := select first_name, last_name, salary, salary*1.05 as new_salary from employees where department_id=5;")
+query = st.text_area("Query:", value="select employee_id, first_name, last_name from employees order by first_name, last_name;")
 
 
 def load_table(name):
