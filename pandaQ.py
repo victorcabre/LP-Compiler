@@ -13,7 +13,7 @@ from operator import add, sub, mul, truediv
 st.subheader("Víctor Cabré Guerrero")
 st.title("PandaQ")  
 
-query = st.text_area("Query:", value="select employee_id, first_name, last_name from employees order by first_name, last_name;")
+query = st.text_area("Query:", value="select employee_id, first_name, last_name from employees where department_id in (select department_id from departments where location_id=1700)   order by first_name, last_name;")
 
 
 def load_table(name):
@@ -29,7 +29,7 @@ def load_table(name):
 
 class EvalVisitor(pandaQVisitor):
 
-    # SELECT fields FROM table (ORDER BY)? 
+    # SELECT fields FROM table
     def visitSelect(self, ctx):
         # args has optional arguments (order, where, join)
         [_, ids, _, table, *args] = ctx.getChildren()
@@ -42,7 +42,6 @@ class EvalVisitor(pandaQVisitor):
             if self.data is None: return
         
         self.df = pd.DataFrame()
-        self.isSubquery = False
 
         # process argument "inner join"
         for arg in args:
@@ -195,7 +194,20 @@ class EvalVisitor(pandaQVisitor):
         st.line_chart(df_numeric)
 
     def visitWhereIn(self, ctx:pandaQParser.WhereInContext):
-        return
+        [_, id, _, _, select, _] = ctx.getChildren()
+        
+        # visit subquery statement and get result
+        original_df = self.df.copy()
+        original_data = self.data.copy()
+        self.visit(select)
+
+        subquery_df = self.df.copy()
+        self.df = original_df
+        self.data = original_data
+
+        self.df = self.data[self.data[id.getText()].isin(subquery_df.iloc[:,0].tolist())][original_df.columns]
+
+        
 
 
 
@@ -210,6 +222,6 @@ if parser.getNumberOfSyntaxErrors() == 0:
     visitor = EvalVisitor()
     visitor.visit(tree)
 else:
-    print(parser.getNumberOfSyntaxErrors(), 'errors de sintaxi.')
+    print(parser.getNumberOfSyntaxErrors(), 'syntax errors.')
     print(tree.toStringTree(recog=parser))
     st.error("Syntax error (make sure to use ';' at the end of a statement)")

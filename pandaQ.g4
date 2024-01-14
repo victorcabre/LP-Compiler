@@ -34,7 +34,7 @@ orderColumnAscDesc: ID ('asc'|'desc')?;
 
 
 where:  'where' exprBool                                  #whereCond
-        | 'where' ID 'in' select                          #whereIn
+        | 'where' ID 'in' '('select')'                    #whereIn
         ;
 
 
