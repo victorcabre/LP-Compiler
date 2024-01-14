@@ -9,7 +9,9 @@ statement:      (select
                 ';'
                 ;
 
-select: 'select' ('*'|columnList) 'from' ID order? where? join*;
+select: 'select' ('*'|columnList) 'from' ID order? whereCond? join*
+        | 'select' ('*'|columnList) 'from' ID whereIn? order? join*
+        ;
 
 columnList: (columnName|calculatedColumn) (',' (columnName|calculatedColumn))*;
 
@@ -33,10 +35,9 @@ order: 'order by' orderColumnAscDesc (',' orderColumnAscDesc)*;
 orderColumnAscDesc: ID ('asc'|'desc')?;
 
 
-where:  'where' exprBool                                  #whereCond
-        | 'where' ID 'in' '('select')'                    #whereIn
-        ;
+whereCond: 'where' exprBool;
 
+whereIn: 'where' ID 'in' '('select')';
 
 exprBool        : exprBool ('<'|'='|'and') exprBool       # opBinBool
                 | <assoc=right> 'not' exprBool            # notBool
