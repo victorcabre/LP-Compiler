@@ -189,7 +189,6 @@ class EvalVisitor(pandaQVisitor):
             return
         
         df = st.session_state[id]
-        x_data = range(df.shape[0])
         df_numeric = df.select_dtypes(exclude=['object'])
         st.line_chart(df_numeric)
 
