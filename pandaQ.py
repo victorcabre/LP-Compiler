@@ -14,7 +14,7 @@ from operator import add, sub, mul, truediv
 st.subheader("Víctor Cabré Guerrero")
 st.title("PandaQ")  
 
-query = st.text_input("Query:", value="select * from countries where region_id=2")
+query = st.text_input("Query:", value="select * from employees inner join departments on department_id=department_id")
 
 
 def load_table(name):
@@ -40,6 +40,12 @@ class EvalVisitor(pandaQVisitor):
         if self.data is None: return
         
         self.df = pd.DataFrame()
+
+
+        # process argument "inner join"
+        # for arg in args:
+        #     if "inner join" in arg.getText():
+        #         self.visit(arg)
 
         # Display table with all columns or specific columns
         if (ids.getText() == "*"):
@@ -74,6 +80,7 @@ class EvalVisitor(pandaQVisitor):
         
         self.df[columnName] = self.data[columnName]
 
+    # Calculated column functions
 
     def visitCalculatedColumn(self, ctx: pandaQParser.CalculatedColumnContext):
         [expr, _, columnName] = ctx.getChildren()
@@ -101,6 +108,9 @@ class EvalVisitor(pandaQVisitor):
     def visitCalculatedName(self, ctx: pandaQParser.CalculatedNameContext):
         return self.data[ctx.getText()]
     
+
+    # ORDER BY functions
+
     def visitOrder(self, ctx: pandaQParser.OrderContext):
         columnList = [] # List of column names
         ascDescList = [] # True if asc
@@ -154,6 +164,14 @@ class EvalVisitor(pandaQVisitor):
     
     def visitIntBool(self, ctx: pandaQParser.IntBoolContext):
         return int(ctx.getText())
+    
+    # Join functions
+
+    def visitJoin(self, ctx: pandaQParser.JoinContext):
+        [_, table, _, col1, _, col2] = ctx.getChildren()
+
+        other_df = load_table(table.getText())
+        self.df = pd.merge(self.df, other_df, left_on=col1.getText(), right_on=col2.getText(), how='inner')
 
 
 # Main script

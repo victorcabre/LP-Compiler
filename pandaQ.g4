@@ -4,7 +4,7 @@ root: statement*;
 
 statement: select;
 
-select: 'select' ('*'|columnList) 'from' ID order? where?;
+select: 'select' ('*'|columnList) 'from' ID order? where? join?;
 
 columnList: (columnName|calculatedColumn) (',' (columnName|calculatedColumn))*;
 
@@ -37,6 +37,10 @@ exprBool        : exprBool ('<'|'='|'and') exprBool       # opBinBool
                 | INT                                     # intBool
                 | FLOAT                                   # floatBool
                 ;
+
+
+
+join: 'inner join' ID 'on' ID '=' ID;
 
 
 
