@@ -5,7 +5,7 @@ from pandaQVisitor import pandaQVisitor
 
 import streamlit as st
 import pandas as pd
-from pandaQVisitor import pandaQVisitor
+import matplotlib.pyplot as plt
 
 from operator import add, sub, mul, truediv
 
@@ -14,7 +14,7 @@ from operator import add, sub, mul, truediv
 st.subheader("Víctor Cabré Guerrero")
 st.title("PandaQ")  
 
-query = st.text_area("Query:", value="q := select first_name, last_name, job_title, department_name from employees inner join departments on department_id = department_id inner join jobs on job_id = job_id")
+query = st.text_area("Query:", value="q := select first_name, last_name, salary, salary*1.05 as new_salary from employees where department_id=5;")
 
 
 def load_table(name):
@@ -169,7 +169,7 @@ class EvalVisitor(pandaQVisitor):
     def visitIntBool(self, ctx: pandaQParser.IntBoolContext):
         return int(ctx.getText())
     
-    # Join functions
+
 
     def visitJoin(self, ctx: pandaQParser.JoinContext):
         [_, table, _, col1, _, col2] = ctx.getChildren()
@@ -182,9 +182,17 @@ class EvalVisitor(pandaQVisitor):
         self.visit(select)
         st.session_state[name] = self.df.copy()
 
+    def visitPlot(self, ctx:pandaQParser.PlotContext):
+        [_, id] = ctx.getChildren()
 
-
-
+        if id.getText() not in st.session_state:
+            st.error(f"Table {id.getText()} is not in the symbol table.")
+            return
+        
+        df = st.session_state[id]
+        x_data = range(df.shape[0])
+        df_numeric = df.select_dtypes(exclude=['object'])
+        st.line_chart(df_numeric)
 
 
 
