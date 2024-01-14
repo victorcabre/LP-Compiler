@@ -4,7 +4,7 @@ root: statement*;
 
 statement: select;
 
-select: 'select' ('*'|columnList) 'from' ID (order)?;
+select: 'select' ('*'|columnList) 'from' ID order? where?;
 
 columnList: (columnName|calculatedColumn) (',' (columnName|calculatedColumn))*;
 
@@ -26,6 +26,21 @@ identificator: ID;
 order: 'order by' orderColumnAscDesc (',' orderColumnAscDesc)*;
 
 orderColumnAscDesc: ID ('asc'|'desc')?;
+
+
+where: 'where' exprBool;
+
+
+exprBool        : exprBool ('<'|'='|'and') exprBool       # opBinBool
+                | 'not' exprBool                          # notBool
+                | ID                                      # nameBool
+                | INT                                     # intBool
+                | FLOAT                                   # floatBool
+                ;
+
+
+
+
 
 INT: [0-9]+;
 FLOAT: [0-9]+ '.' [0-9]+;

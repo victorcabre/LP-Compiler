@@ -12,9 +12,9 @@ from operator import add, sub, mul, truediv
 # Streamlit components
 
 st.subheader("Víctor Cabré Guerrero")
-st.title("PandaQ")
+st.title("PandaQ")  
 
-query = st.text_input("Query:", value="select country_name, country_id, country_id as c from countries")
+query = st.text_input("Query:", value="select * from countries where region_id=2")
 
 
 def load_table(name):
@@ -30,7 +30,7 @@ def load_table(name):
 
 class EvalVisitor(pandaQVisitor):
 
-    # SELECT fields FROM table
+    # SELECT fields FROM table (ORDER BY)? 
     def visitSelect(self, ctx):
         if ctx.getChildCount() == 5:
             [_, ids, _, table, order] = ctx.getChildren()
@@ -119,7 +119,6 @@ class EvalVisitor(pandaQVisitor):
             
         self.df = self.df.sort_values(axis=0, by=columnList, ascending=ascDescList)
 
-
     def visitOrderColumnAscDesc(self, ctx: pandaQParser.OrderColumnAscDescContext):
         if ctx.getChildCount() == 2:
             [column, order] = ctx.getChildren()
@@ -128,9 +127,33 @@ class EvalVisitor(pandaQVisitor):
             [column] = ctx.getChildren()
             return column.getText(), True
 
-        
+
+    def visitWhere(self, ctx: pandaQParser.WhereContext):
+        [_, cond] = ctx.getChildren()
+        self.df = self.df.loc[self.visit(cond)]
+
+    def visitOpBinBool(self, ctx: pandaQParser.OpBinBoolContext):
+        operators = {
+            '<': lambda x, y: x < y,
+            '=': lambda x, y: x == y,
+            'and': lambda x, y: x & y,
+        }
+        [expr1, operator, expr2] = ctx.getChildren()
+        return operators[operator.getText()](self.visit(expr1), self.visit(expr2))
+
+    def visitNameBool(self, ctx: pandaQParser.NameBoolContext):
+        return self.df[ctx.getText()]
+
+    def visitNotBool(self, ctx: pandaQParser.NotBoolContext):
+        [_, expr] = ctx.getChildren()
+        return ~self.visit(expr)
+
+    def visitFloatBool(self, ctx: pandaQParser.FloatBoolContext):
+        return float(ctx.getText())
     
-    
+    def visitIntBool(self, ctx: pandaQParser.IntBoolContext):
+        return int(ctx.getText())
+
 
 # Main script
 input_stream = InputStream(query)
