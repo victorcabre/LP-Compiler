@@ -42,7 +42,7 @@ class EvalVisitor(pandaQVisitor):
             if self.data is None: return
         
         self.df = pd.DataFrame()
-
+        self.isSubquery = False
 
         # process argument "inner join"
         for arg in args:
@@ -139,7 +139,7 @@ class EvalVisitor(pandaQVisitor):
             return column.getText(), True
 
 
-    def visitWhere(self, ctx: pandaQParser.WhereContext):
+    def visitWhereCond(self, ctx:pandaQParser.WhereCondContext):
         [_, cond] = ctx.getChildren()
         self.df = self.df.loc[self.visit(cond)]
 
@@ -153,9 +153,11 @@ class EvalVisitor(pandaQVisitor):
         return operators[operator.getText()](self.visit(expr1), self.visit(expr2))
 
     def visitNameBool(self, ctx: pandaQParser.NameBoolContext):
-        try:
+        if ctx.getText() in self.df.columns:
+            return self.df[ctx.getText()]
+        elif ctx.getText() in self.data.columns:
             return self.data[ctx.getText()]
-        except:
+        else:
             return ctx.getText()
 
     def visitNotBool(self, ctx: pandaQParser.NotBoolContext):
@@ -192,6 +194,8 @@ class EvalVisitor(pandaQVisitor):
         df_numeric = df.select_dtypes(exclude=['object'])
         st.line_chart(df_numeric)
 
+    def visitWhereIn(self, ctx:pandaQParser.WhereInContext):
+        return
 
 
 

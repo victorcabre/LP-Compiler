@@ -33,11 +33,13 @@ order: 'order by' orderColumnAscDesc (',' orderColumnAscDesc)*;
 orderColumnAscDesc: ID ('asc'|'desc')?;
 
 
-where: 'where' exprBool;
+where:  'where' exprBool                                  #whereCond
+        | 'where' ID 'in' select                          #whereIn
+        ;
 
 
 exprBool        : exprBool ('<'|'='|'and') exprBool       # opBinBool
-                | <assoc=right> 'not' exprBool                          # notBool
+                | <assoc=right> 'not' exprBool            # notBool
                 | ID                                      # nameBool
                 | INT                                     # intBool
                 | FLOAT                                   # floatBool
