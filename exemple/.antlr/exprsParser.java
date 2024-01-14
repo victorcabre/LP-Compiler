@@ -104,14 +104,6 @@ public class exprsParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_root; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof exprsListener ) ((exprsListener)listener).enterRoot(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof exprsListener ) ((exprsListener)listener).exitRoot(this);
-		}
 	}
 
 	public final RootContext root() throws RecognitionException {
@@ -167,14 +159,6 @@ public class exprsParser extends Parser {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public AssignacioContext(StatementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof exprsListener ) ((exprsListener)listener).enterAssignacio(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof exprsListener ) ((exprsListener)listener).exitAssignacio(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class CondicionalContext extends StatementContext {
@@ -185,14 +169,6 @@ public class exprsParser extends Parser {
 			return getRuleContext(StatementContext.class,0);
 		}
 		public CondicionalContext(StatementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof exprsListener ) ((exprsListener)listener).enterCondicional(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof exprsListener ) ((exprsListener)listener).exitCondicional(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class WriteContext extends StatementContext {
@@ -200,14 +176,6 @@ public class exprsParser extends Parser {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public WriteContext(StatementContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof exprsListener ) ((exprsListener)listener).enterWrite(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof exprsListener ) ((exprsListener)listener).exitWrite(this);
-		}
 	}
 
 	public final StatementContext statement() throws RecognitionException {
@@ -286,14 +254,6 @@ public class exprsParser extends Parser {
 	public static class NumeroContext extends ExprContext {
 		public TerminalNode NUM() { return getToken(exprsParser.NUM, 0); }
 		public NumeroContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof exprsListener ) ((exprsListener)listener).enterNumero(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof exprsListener ) ((exprsListener)listener).exitNumero(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class OpBinContext extends ExprContext {
@@ -304,27 +264,11 @@ public class exprsParser extends Parser {
 			return getRuleContext(ExprContext.class,i);
 		}
 		public OpBinContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof exprsListener ) ((exprsListener)listener).enterOpBin(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof exprsListener ) ((exprsListener)listener).exitOpBin(this);
-		}
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class VariableContext extends ExprContext {
 		public TerminalNode VAR() { return getToken(exprsParser.VAR, 0); }
 		public VariableContext(ExprContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof exprsListener ) ((exprsListener)listener).enterVariable(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof exprsListener ) ((exprsListener)listener).exitVariable(this);
-		}
 	}
 
 	public final ExprContext expr() throws RecognitionException {

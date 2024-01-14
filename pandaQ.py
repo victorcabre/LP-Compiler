@@ -7,6 +7,8 @@ import streamlit as st
 import pandas as pd
 from pandaQVisitor import pandaQVisitor
 
+from operator import add, sub, mul, truediv
+
 # Streamlit components
 
 st.subheader("Víctor Cabré Guerrero")
@@ -33,42 +35,76 @@ class EvalVisitor(pandaQVisitor):
         [_, ids, _, table] = ctx.getChildren()
 
         # Load table
-        df = load_table(table.getText())
-        if df is None: return
+        self.data = load_table(table.getText())
+        if self.data is None: return
         
+        self.df = pd.DataFrame()
+
         # Display table with all columns or specific columns
         if (ids.getText() == "*"):
-            st.write("Result:", df)
+            st.write("Result:", self.data)
         else:
-            columns = self.visit(ids)
-            #Check that column names are in dataframe
-            for column in columns:
-                if (column not in df.columns):
-                    st.error("Error: Incorrect column name/s")
-                    return
-
-            st.write("Result:", df[columns])
+            self.visit(ids)
+            st.write("Result:", self.df)
     
     def visitIdentifier(self, ctx):
         [id] = ctx.getChildren()
         return id.getText()
     
     def visitColumnList(self, ctx):
-        list = []
+        #Check that column names are in dataframe
         for token in ctx.getChildren():
             if token.getText() != ',':
-                list.append(token.getText())
-            self.visit(token)
-        return list
+                # Visit every column (calculated or not)
+                self.visit(token)
+            
+
+    def visitColumnName(self, ctx: pandaQParser.ColumnNameContext):
+        columnName = ctx.getText()
+        if (columnName not in self.data.columns):
+            st.error("Error: Incorrect column name/s")
+            return
+        
+        self.df[columnName] = self.data[columnName]
+
+
+    def visitCalculatedColumn(self, ctx: pandaQParser.CalculatedColumnContext):
+        [expr, _, columnName] = ctx.getChildren()
+        
+        self.df[columnName.getText()] = self.visit(expr)
+
+    def visitOpBin(self, ctx: pandaQParser.OpBinContext):
+        [expr1, operator, expr2] = ctx.getChildren()
+
+        operators = {
+                    '+':add,
+                    '-':sub,
+                    '*':mul,
+                    '/':truediv
+        }
+        
+        return operators[operator.getText()](self.visit(expr1), self.visit(expr2))
+    
+    def visitFloat(self, ctx: pandaQParser.FloatContext):
+        return float(ctx.getText())
+    
+    def visitInt(self, ctx: pandaQParser.IntContext):
+        return int(ctx.getText())
+
+    def visitCalculatedName(self, ctx: pandaQParser.CalculatedNameContext):
+        return self.data[ctx.getText()]
+        
+        
+    
     
 
 # Main script
-
 input_stream = InputStream(query)
 lexer = pandaQLexer(input_stream)
 token_stream = CommonTokenStream(lexer)
 parser = pandaQParser(token_stream)
 tree = parser.root()
+
 if parser.getNumberOfSyntaxErrors() == 0:
     visitor = EvalVisitor()
     visitor.visit(tree)
