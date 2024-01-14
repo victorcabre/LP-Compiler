@@ -13,7 +13,7 @@ from operator import add, sub, mul, truediv
 st.subheader("Víctor Cabré Guerrero")
 st.title("PandaQ")  
 
-query = st.text_area("Query:", value="select * from countries where not region_id=1 and not region_id=3;")
+query = st.text_area("Query:")
 
 
 def load_table(name):
