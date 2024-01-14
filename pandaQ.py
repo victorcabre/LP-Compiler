@@ -68,7 +68,7 @@ class EvalVisitor(pandaQVisitor):
         self.is_subquery = False
 
 
-    def visitIdentifier(self, ctx): 
+    def visitIdentifier(self, ctx):
         [id] = ctx.getChildren()
         return id.getText()
     
@@ -94,6 +94,10 @@ class EvalVisitor(pandaQVisitor):
         [expr, _, columnName] = ctx.getChildren()
         
         self.df[columnName.getText()] = self.visit(expr)
+
+    def visitParenthesisBin(self, ctx:pandaQParser.ParenthesisBinContext):
+        [_, expr, _] = ctx.getChildren()
+        return self.visit(expr)
 
     def visitOpBin(self, ctx: pandaQParser.OpBinContext):
         [expr1, operator, expr2] = ctx.getChildren()
@@ -147,6 +151,11 @@ class EvalVisitor(pandaQVisitor):
     def visitWhereCond(self, ctx:pandaQParser.WhereCondContext):
         [_, cond] = ctx.getChildren()
         self.df = self.df.loc[self.visit(cond)]
+
+    def visitParenthesisBool(self, ctx:pandaQParser.ParenthesisBoolContext):
+        [_, expr, _] = ctx.getChildren()
+        return self.visit(expr)
+
 
     def visitOpBinBool(self, ctx: pandaQParser.OpBinBoolContext):
         operators = {

@@ -20,7 +20,8 @@ columnName: identificator;
 calculatedColumn: expr 'as' identificator;
 
 
-expr    : expr ('*'|'/') expr                             # opBin
+expr    : '(' expr ')'                                    # parenthesisBin
+        | expr ('*'|'/') expr                             # opBin
         | expr ('+'|'-') expr                             # opBin
         | FLOAT                                           # float
         | INT                                             # int
@@ -39,7 +40,8 @@ whereCond: 'where' exprBool;
 
 whereIn: 'where' ID 'in' '('select')';
 
-exprBool        : exprBool ('<'|'=') exprBool             # opBinBool
+exprBool        : '(' exprBool ')'                        # parenthesisBool
+                | exprBool ('<'|'=') exprBool             # opBinBool
                 | <assoc=left> 'not' exprBool             # notBool
                 | exprBool ('and') exprBool               # opBinBool
                 | ID                                      # nameBool
