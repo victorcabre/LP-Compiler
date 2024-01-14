@@ -2,8 +2,11 @@ grammar pandaQ;
 
 root: statement*;
 
-statement:      select
+statement:      (select
                 | assignment
+                | plot
+                )
+                ';'
                 ;
 
 select: 'select' ('*'|columnList) 'from' ID order? where? join*;
@@ -44,8 +47,10 @@ exprBool        : exprBool ('<'|'='|'and') exprBool       # opBinBool
 
 join: 'inner join' ID 'on' ID '=' ID;
 
-
 assignment: ID ':=' select;
+
+plot: 'plot' ID;
+
 
 
 

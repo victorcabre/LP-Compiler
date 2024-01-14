@@ -14,7 +14,7 @@ from operator import add, sub, mul, truediv
 st.subheader("Víctor Cabré Guerrero")
 st.title("PandaQ")  
 
-query = st.text_input("Query:", value="q := select first_name, last_name, job_title, department_name from employees inner join departments on department_id = department_id inner join jobs on job_id = job_id")
+query = st.text_area("Query:", value="q := select first_name, last_name, job_title, department_name from employees inner join departments on department_id = department_id inner join jobs on job_id = job_id")
 
 
 def load_table(name):
@@ -202,4 +202,4 @@ if parser.getNumberOfSyntaxErrors() == 0:
 else:
     print(parser.getNumberOfSyntaxErrors(), 'errors de sintaxi.')
     print(tree.toStringTree(recog=parser))
-    st.error("Syntax error.")
+    st.error("Syntax error (make sure to use ';' at the end of a statement)")
