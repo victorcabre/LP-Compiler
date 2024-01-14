@@ -68,7 +68,7 @@ class EvalVisitor(pandaQVisitor):
         self.is_subquery = False
 
 
-    def visitIdentifier(self, ctx):
+    def visitIdentifier(self, ctx): 
         [id] = ctx.getChildren()
         return id.getText()
     
