@@ -39,8 +39,9 @@ whereCond: 'where' exprBool;
 
 whereIn: 'where' ID 'in' '('select')';
 
-exprBool        : exprBool ('<'|'='|'and') exprBool       # opBinBool
-                | <assoc=right> 'not' exprBool            # notBool
+exprBool        : exprBool ('<'|'=') exprBool             # opBinBool
+                | <assoc=left> 'not' exprBool             # notBool
+                | exprBool ('and') exprBool               # opBinBool
                 | ID                                      # nameBool
                 | INT                                     # intBool
                 | FLOAT                                   # floatBool

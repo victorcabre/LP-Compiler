@@ -13,7 +13,7 @@ from operator import add, sub, mul, truediv
 st.subheader("Víctor Cabré Guerrero")
 st.title("PandaQ")  
 
-query = st.text_area("Query:", value="select employee_id, first_name, last_name from employees where department_id in (select department_id from departments where location_id=1700)   order by first_name, last_name;")
+query = st.text_area("Query:", value="select * from countries where not region_id=1 and not region_id=3;")
 
 
 def load_table(name):
@@ -44,9 +44,7 @@ class EvalVisitor(pandaQVisitor):
             self.data = load_table(table.getText())
             if self.data is None: return
         
-        self.df = pd.DataFrame()
-
-        
+        self.df = pd.DataFrame()        
 
         # process argument "inner join"
         for arg in args:
@@ -101,10 +99,10 @@ class EvalVisitor(pandaQVisitor):
         [expr1, operator, expr2] = ctx.getChildren()
 
         operators = {
-                    '+':add,
-                    '-':sub,
-                    '*':mul,
-                    '/':truediv
+                    '+': add,
+                    '-': sub,
+                    '*': mul,
+                    '/': truediv
         }
         
         return operators[operator.getText()](self.visit(expr1), self.visit(expr2))
@@ -217,9 +215,6 @@ class EvalVisitor(pandaQVisitor):
 
         self.df = self.data[self.data[id.getText()].isin(subquery_df.iloc[:,0].tolist())][original_df.columns]
 
-        
-
-
 
 # Main script
 input_stream = InputStream(query)
@@ -231,6 +226,7 @@ tree = parser.root()
 if parser.getNumberOfSyntaxErrors() == 0:
     visitor = EvalVisitor()
     visitor.visit(tree)
+    print(tree.toStringTree(recog=parser))
 else:
     print(parser.getNumberOfSyntaxErrors(), 'syntax errors.')
     print(tree.toStringTree(recog=parser))
