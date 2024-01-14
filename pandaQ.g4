@@ -32,7 +32,7 @@ where: 'where' exprBool;
 
 
 exprBool        : exprBool ('<'|'='|'and') exprBool       # opBinBool
-                | 'not' exprBool                          # notBool
+                | <assoc=right> 'not' exprBool                          # notBool
                 | ID                                      # nameBool
                 | INT                                     # intBool
                 | FLOAT                                   # floatBool
