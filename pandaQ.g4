@@ -2,9 +2,11 @@ grammar pandaQ;
 
 root: statement*;
 
-statement: select;
+statement:      select
+                | assignment
+                ;
 
-select: 'select' ('*'|columnList) 'from' ID order? where? join?;
+select: 'select' ('*'|columnList) 'from' ID order? where? join*;
 
 columnList: (columnName|calculatedColumn) (',' (columnName|calculatedColumn))*;
 
@@ -43,6 +45,7 @@ exprBool        : exprBool ('<'|'='|'and') exprBool       # opBinBool
 join: 'inner join' ID 'on' ID '=' ID;
 
 
+assignment: ID ':=' select;
 
 
 

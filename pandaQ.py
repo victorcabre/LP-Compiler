@@ -14,7 +14,7 @@ from operator import add, sub, mul, truediv
 st.subheader("Víctor Cabré Guerrero")
 st.title("PandaQ")  
 
-query = st.text_input("Query:", value="select first_name, department_name from employees inner join departments on department_id=department_id")
+query = st.text_input("Query:", value="q := select first_name, last_name, job_title, department_name from employees inner join departments on department_id = department_id inner join jobs on job_id = job_id")
 
 
 def load_table(name):
@@ -32,12 +32,15 @@ class EvalVisitor(pandaQVisitor):
 
     # SELECT fields FROM table (ORDER BY)? 
     def visitSelect(self, ctx):
-        # args has optional arguments (order and where)
+        # args has optional arguments (order, where, join)
         [_, ids, _, table, *args] = ctx.getChildren()
 
-        # Load table 
-        self.data = load_table(table.getText())
-        if self.data is None: return
+        # Load table: first check if it's in symbol table, otherwise load from csv
+        if table.getText() in st.session_state:
+            self.data = st.session_state[table.getText()].copy()
+        else:
+            self.data = load_table(table.getText())
+            if self.data is None: return
         
         self.df = pd.DataFrame()
 
@@ -173,6 +176,18 @@ class EvalVisitor(pandaQVisitor):
 
         other_df = load_table(table.getText())
         self.data = pd.merge(self.data, other_df, left_on=col1.getText(), right_on=col2.getText(), how='inner')
+
+    def visitAssignment(self, ctx: pandaQParser.AssignmentContext):
+        [name, _, select] = ctx.getChildren()
+        self.visit(select)
+        st.session_state[name] = self.df.copy()
+
+
+
+
+
+
+
 
 # Main script
 input_stream = InputStream(query)
