@@ -30,10 +30,8 @@ Per exemple, pots fer:
 
 També:
 
-    q := select first_name, last_name, job_title, department_name from employees
+    q := select first_name, last_name, job_title, department_name from employees inner join departments on department_id=department_id inner join jobs on job_id=job_id;
 
-    inner join departments on department_id=department_id
-    inner join jobs on job_id=job_id;
     select first_name, last_name from q;
 
 Per enviar la consulta, fes clic a qualsevol zona fora de la caixa de text o prem Ctrl+Enter. El resultat apareixerà just a sota de la caixa de text. Si hi ha més d'un resultat, apareixeran ordenats cronològicament.
