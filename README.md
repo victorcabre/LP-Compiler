@@ -30,7 +30,9 @@ Per exemple, pots fer:
 
 També:
 
-    q := select first_name, last_name, job_title, department_name from employees inner join departments on department_id=department_id inner join jobs on job_id=job_id;
+    q := select first_name, last_name, job_title, department_name from
+    employees inner join departments on department_id=department_id
+    inner join jobs on job_id=job_id;
 
     select first_name, last_name from q;
 
