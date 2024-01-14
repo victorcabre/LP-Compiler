@@ -104,22 +104,30 @@ class EvalVisitor(pandaQVisitor):
         return self.data[ctx.getText()]
     
     def visitOrder(self, ctx: pandaQParser.OrderContext):
-        if ctx.getChildCount() == 3:
-            [_, column, order] = ctx.getChildren()
-            asc = order.getText() == 'asc'
-        else:
-            [_, column] = ctx.getChildren()
-            asc = True
+        columnList = [] # List of column names
+        ascDescList = [] # True if asc
+        for child in ctx.getChildren():
+            if child.getText() not in ['order by', ',']:
+                columnName, ascDesc = self.visit(child)
+                columnList.append(columnName)
+                ascDescList.append(ascDesc)
 
-        if column.getText() not in self.df.columns:
-            st.error(f"Incorrect column \"{column.getText()}\" in ORDER BY statement")
-            return
-        
-        if asc:
-            self.df = self.df.sort_values(axis=0, by=column.getText(), ascending=True)
+        for column in columnList:
+            if column not in self.df.columns:
+                st.error(f"Incorrect column \"{column}\" in ORDER BY statement")
+                return
+            
+        self.df = self.df.sort_values(axis=0, by=columnList, ascending=ascDescList)
+
+
+    def visitOrderColumnAscDesc(self, ctx: pandaQParser.OrderColumnAscDescContext):
+        if ctx.getChildCount() == 2:
+            [column, order] = ctx.getChildren()
+            return column.getText(), order.getText() == 'asc'
         else:
-            self.df = self.df.sort_values(axis=0, by=column.getText(), ascending=False)
-        
+            [column] = ctx.getChildren()
+            return column.getText(), True
+
         
     
     

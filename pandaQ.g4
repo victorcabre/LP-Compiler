@@ -23,8 +23,9 @@ expr    : expr ('*'|'/') expr                             # opBin
 identificator: ID;
 
 
-order: 'order by' (ID ('asc'|'desc')?) (',' (ID ('asc'|'desc')?))*;
+order: 'order by' orderColumnAscDesc (',' orderColumnAscDesc)*;
 
+orderColumnAscDesc: ID ('asc'|'desc')?;
 
 INT: [0-9]+;
 FLOAT: [0-9]+ '.' [0-9]+;
