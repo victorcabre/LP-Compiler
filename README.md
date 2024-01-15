@@ -8,7 +8,7 @@ PandaQ és un intèrpret de SQL basat en Pandas. L'intèrpret ofereix una interf
 1. Per executar, has de tenir instal·lat Streamlit, Pandas i ANTLR4. Pots fer-ho utilitzant les següents comandes:
 `pip install streamlit`, `pip install pandas`, `pip install antlr4-tool`, `pip install antlr4-python3-runtime`
 
-2. Assegurat que hagis descomprimit `pandaQ.py` i `pandaQ.g4` al mateix directori.
+2. Assegura't que hagis descomprimit `pandaQ.py` i `pandaQ.g4` al mateix directori.
 
 3. A continuació, genera el Parser i el Lexer a partir del fitxer `pandaQ.g4`. Pots fer-ho amb la següent comanda:
 `antlr4 -Dlanguage=Python3 -no-listener -visitor pandaQ.g4`
