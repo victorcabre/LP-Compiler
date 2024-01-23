@@ -1,4 +1,4 @@
-### Víctor Cabré Guerrero
+### Víctor Cabré
 # Pràctica LP 2023-2024 Q1: PandaQ
 
 PandaQ és un intèrpret de SQL basat en Pandas. L'intèrpret ofereix una interfície web senzilla, a través de la qual es poden fer consultes i visualitzar els resultats.
