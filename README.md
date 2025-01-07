@@ -1,96 +1,93 @@
 ### Víctor Cabré
-# Pràctica LP 2023-2024 Q1: PandaQ
+# LP Practice 2023-2024 Q1: PandaQ
 
-PandaQ és un intèrpret de SQL basat en Pandas. L'intèrpret ofereix una interfície web senzilla, a través de la qual es poden fer consultes i visualitzar els resultats.
+PandaQ is a SQL interpreter based on Pandas. The interpreter offers a simple web interface, through which you can make queries and visualize the results.
 
-
-## Com executar PandaQ?
-1. Per executar, has de tenir instal·lat Streamlit, Pandas i ANTLR4. Pots fer-ho utilitzant les següents comandes:
+## How to run PandaQ?
+1. To run, you must have Streamlit, Pandas and ANTLR4 installed. You can do this using the following commands:
 `pip install streamlit`, `pip install pandas`, `pip install antlr4-tool`, `pip install antlr4-python3-runtime`
 
-2. Assegura't que hagis descomprimit `pandaQ.py` i `pandaQ.g4` al mateix directori.
+2. Make sure you have unzipped `pandaQ.py` and `pandaQ.g4` to the same directory.
 
-3. A continuació, genera el Parser i el Lexer a partir del fitxer `pandaQ.g4`. Pots fer-ho amb la següent comanda:
+3. Then, generate the Parser and Lexer from the `pandaQ.g4` file. You can do this with the following command:
 `antlr4 -Dlanguage=Python3 -no-listener -visitor pandaQ.g4`
 
-4. Crea una carpeta dins del directori i anomena-la `data`. Ho pots fer amb `mkdir data`.
+4. Create a folder inside the directory and name it `data`. You can do this with `mkdir data`.
 
-5. Posa els fitxers CSV dins de la carpeta `data`
+5. Put the CSV files inside the `data` folder
 
-6. Executa el programa amb Streamlit: `streamlit run pandaQ.py`
+6. Run the program with Streamlit: `streamlit run pandaQ.py`
 
+## How do I use the program?
 
-## Com utilitzo el programa?
+The graphical interface has a main element, a text box where you can write your _queries_. You can chain several _statements_ within the same _query_.
 
-La interfície gràfica té un element principal, una caixa de text on pots escriure les teves _queries_. Pots encadenar diversos _statements_ dins de la mateixa _query_.
+For example, you can do:
 
-Per exemple, pots fer:
+select * from countries;
 
-    select * from countries;
+Also:
 
-També:
+q := select first_name, last_name, job_title, department_name from
+employees inner join departments on department_id=department_id
+inner join jobs on job_id=job_id;
 
-    q := select first_name, last_name, job_title, department_name from
-    employees inner join departments on department_id=department_id
-    inner join jobs on job_id=job_id;
+select first_name, last_name from q;
 
-    select first_name, last_name from q;
+To submit the query, click anywhere outside the text box or press Ctrl+Enter. The result will appear just below the text box. If there is more than one result, they will appear in chronological order.
 
-Per enviar la consulta, fes clic a qualsevol zona fora de la caixa de text o prem Ctrl+Enter. El resultat apareixerà just a sota de la caixa de text. Si hi ha més d'un resultat, apareixeran ordenats cronològicament.
+## Features
 
+#### Basic Queries
 
-## Funcionalitats
+select * from countries;
 
-#### Queries bàsiques
+select first_name, last_name from employees;
 
-    select * from countries;
-    select first_name, last_name from employees;
+#### Calculated Fields
 
+You can make queries using the operators +, -, *, / and parentheses. You can also use one or more columns within your calculated field.
 
-#### Camps calculats
+select first_name, salary, salary * (1.05 + 3) as new_salary from employees;
 
-Pots fer consultes utilizant els operadors +, -, *, / i parèntesis. També pots utilitzar una o més columnes dins del teu camp calculat.
-
-    select first_name, salary, salary * (1.05 + 3) as new_salary from employees;
-
-    select salary*(10 + job_id*(4+3)) as senseSentit from employees;
+select salary*(10 + job_id*(4+3)) as senseSentit from employees;
 
 #### Order by
 
-Pots ordenar les teves consultes de forma ascendent o descendent, i utilitzant diferents columnes. Les columnes de més a l'esquerra tenen prioritat, les de la dreta s'usen per desempatar. Si no especifiques 'asc' o 'desc', per defecte s'ordenen de forma ascendent, seguint l'estandard de SQL.
+You can sort your queries in ascending or descending order, and using different columns. The leftmost columns have priority, the rightmost ones are used to break ties. If you do not specify 'asc' or 'desc', the default is to sort in ascending order, following the SQL standard.
 
-    select * from countries order by region_id, country_name desc;
+select * from countries order by region_id, country_name desc;
 
 #### Where
 
-Pots filtrar les teves consultes. Admet els següents operadors: <, =, and, not i parèntesis.
+You can filter your queries. The following operators are supported: <, =, and, not, and parentheses.
 
-    select * from employees where not (employee_id < 5 and department_id = 5);
+select * from employees where not (employee_id < 5 and department_id = 5);
 
 #### Inner join
 
-Pots encadenar múltiples inner joins:
+You can chain multiple inner joins:
 
-    select first_name, last_name, job_title, department_name from employees
-        inner join departments on department_id=department_id
-            inner join jobs on job_id=job_id;
+select first_name, last_name, job_title, department_name from employees
+inner join departments on department_id=department_id
+inner join jobs on job_id=job_id;
 
-#### Taula de símbols i plots
+#### Symbol table and plots
 
-Pots guardar les teves consultes en símbols:
+You can save your queries in symbols:
 
-    taula := select first_name, last_name, salary, salary*1.05 as new_salary from employees where department_id = 5;
+table := select first_name, last_name, salary, salary*1.05 as new_salary from employees where department_id = 5;
 
-I fer un gràfic del resultat:
+And make a graph of the result:
 
-    plot taula;
+plot table;
 
-Només es plotejen les columnes numèriques.
+Only numeric columns are plotted.
 
-#### Subconsultes
+#### Subqueries
 
-Pots fer consultes dins d'altres consultes:
+You can make queries within other queries:
 
-    select employee_id, first_name, last_name from employees where 
-        department_id in (select department_id from departments where 
-            location_id = 1700) order by first_name, last_name;
+select employee_id, first_name, last_name from employees where
+department_id in (select department_id from departments where
+location_id = 1700) order by first_name, last_name;
