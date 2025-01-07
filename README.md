@@ -1,5 +1,5 @@
 ### Víctor Cabré
-# LP Practice 2023-2024 Q1: PandaQ
+# PandaQ
 
 PandaQ is a SQL interpreter based on Pandas. The interpreter offers a simple web interface, through which you can make queries and visualize the results.
 
